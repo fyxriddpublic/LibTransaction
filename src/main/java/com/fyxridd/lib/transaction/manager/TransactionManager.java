@@ -2,28 +2,32 @@ package com.fyxridd.lib.transaction.manager;
 
 import com.fyxridd.lib.config.api.ConfigApi;
 import com.fyxridd.lib.config.manager.ConfigManager;
-import com.fyxridd.lib.core.api.CoreApi;
+import com.fyxridd.lib.core.api.MessageApi;
+import com.fyxridd.lib.core.api.PlayerApi;
 import com.fyxridd.lib.core.api.event.TimeEvent;
 import com.fyxridd.lib.core.api.fancymessage.FancyMessage;
 import com.fyxridd.lib.core.api.inter.FunctionInterface;
+import com.fyxridd.lib.core.manager.realname.NotReadyException;
 import com.fyxridd.lib.transaction.TransactionPlugin;
+import com.fyxridd.lib.transaction.api.Transaction;
 import com.fyxridd.lib.transaction.api.TransactionUser;
 import com.fyxridd.lib.transaction.config.TransactionConfig;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
+import org.bukkit.plugin.EventExecutor;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
-public class TransactionManager implements Listener,FunctionInterface {
+public class TransactionManager implements FunctionInterface {
     private static final String FUNC_NAME = "TransactionManager";
 
     private TransactionConfig config;
 
 	//玩家名 玩家事务信息
-	private static HashMap<String, TransactionUser> transHash = new HashMap<>();
+	private Map<String, TransactionUser> trans = new HashMap<>();
 	
 	public TransactionManager() {
         //添加配置监听
@@ -33,20 +37,24 @@ public class TransactionManager implements Listener,FunctionInterface {
                 config = value;
             }
         });
+        //注册事件
+        {
+            //时间事件
+            Bukkit.getPluginManager().registerEvent(TimeEvent.class, TransactionPlugin.instance, EventPriority.NORMAL, new EventExecutor() {
+                @Override
+                public void execute(Listener listener, Event e) throws EventException {
+                    Iterator<Map.Entry<String, TransactionUser>> it = trans.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry<String, TransactionUser> entry = it.next();
+                        //过期与提示
+                        entry.getValue().onTime();
+                        //检测事务为空
+                        if (entry.getValue().isEmpty()) it.remove();//玩家事务为空,删除事务
+                    }
+                }
+            }, TransactionPlugin.instance);
+        }
     }
-
-	@EventHandler(priority=EventPriority.NORMAL)
-	public void onTime(TimeEvent e) {
-		Iterator<String> it = transHash.keySet().iterator();
-		while (it.hasNext()) {
-			String name = it.next();
-			TransactionUser user = transHash.get(name);
-			//过期与提示
-			user.onTime();
-			//检测事务为空
-			if (user.isEmpty()) it.remove();//玩家事务为空,删除事务
-		}
-	}
 
     @Override
     public String getName() {
@@ -64,30 +72,35 @@ public class TransactionManager implements Listener,FunctionInterface {
     }
 
     /**
-     * 获取玩家事务信息
-     * @param name 玩家名,不为null
-     * @return 玩家事务信息,没有则新建,异常返回null
+     * @see com.fyxridd.lib.transaction.api.TransactionApi#getTransactionUser(String)
      */
-    public static TransactionUser getTransactionUser(String name) {
+    public TransactionUser getTransactionUser(String name) {
         //玩家存在性检测
-        name = CoreApi.getRealName(null, name);
-        if (name == null) return null;
+        try {
+            name = PlayerApi.getRealName(null, name);
+            if (name == null) return null;
+        } catch (NotReadyException e) {
+            return null;
+        }
         //
-        if (!transHash.containsKey(name)) transHash.put(name, new TransactionUser(name));
-        return transHash.get(name);
+        if (!trans.containsKey(name)) trans.put(name, new TransactionUser(name));
+        return trans.get(name);
     }
 
     /**
-     * 删除玩家的所有事务
-     * @param name 玩家名,可为null
+     * @see com.fyxridd.lib.transaction.api.TransactionApi#delTransaction(String)
      */
-    public static void delTransaction(String name) {
+    public void delTransaction(String name) {
         if (name == null) return;
         //玩家存在性检测
-        name = CoreApi.getRealName(null, name);
-        if (name == null) return;
+        try {
+            name = PlayerApi.getRealName(null, name);
+            if (name == null) return;
+        } catch (NotReadyException e) {
+            return;
+        }
         //
-        TransactionUser tu = transHash.remove(name);
+        TransactionUser tu = trans.remove(name);
         if (tu != null) tu.delAllTransaction();
     }
 
@@ -101,16 +114,16 @@ public class TransactionManager implements Listener,FunctionInterface {
      * @param args 操作内容
      * @return 操作结果
      */
-    private static boolean operate(Player p, String... args) {
-        TransactionUser user = transHash.get(p.getName());
+    private boolean operate(Player p, String... args) {
+        TransactionUser user = trans.get(p.getName());
         if (user == null) {//当前没有事务
-            ShowApi.tip(p, get(1110), true);
+            MessageApi.send(p, get(p.getName(), 20), true);
             return false;
         }
         long id = user.getRunning();
         Transaction trans = user.getTransaction(id);
         if (trans == null) {//指定的事务不存在或已经结束
-            ShowApi.tip(p, get(1105), true);
+            MessageApi.send(p, get(p.getName(), 10), true);
             return false;
         }
         //执行事务

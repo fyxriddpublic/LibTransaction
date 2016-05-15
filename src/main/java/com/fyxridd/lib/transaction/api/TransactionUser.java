@@ -2,6 +2,7 @@ package com.fyxridd.lib.transaction.api;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * 某个玩家的事务信息
@@ -14,7 +15,7 @@ public class TransactionUser {
 	private String name;
 
     //事务ID 事务
-	private HashMap<Long, Transaction> transactionHash = new HashMap<Long, Transaction>();
+	private Map<Long, Transaction> transactionHash = new HashMap<>();
 	//进行中的事务ID,-1表示没有进行中的事务(每个玩家最多只能有一个进行中的事务)
 	private long running = -1;
 
@@ -52,9 +53,8 @@ public class TransactionUser {
 
     /**
      * 只提供查询之用,勿直接添加/删除
-     * @return
      */
-    public HashMap<Long, Transaction> getTransactionHash() {
+    public Map<Long, Transaction> getTransactionHash() {
         return transactionHash;
     }
 
@@ -78,7 +78,6 @@ public class TransactionUser {
 
 	/**
 	 * 事务是否为空
-	 * @return
 	 */
 	public boolean isEmpty() {
 		return transactionHash.isEmpty();

@@ -68,12 +68,12 @@ public abstract class Transaction {
 		Player p = Bukkit.getPlayerExact(name);
 		if (p != null && p.isOnline()) {
 			//头
-			FancyMessage msg = get(p.getName(), 1115);
+			FancyMessage msg = get(p.getName(), 30);
 			if (msg != null) MessageApi.send(p, msg, true);
 			//中,信息
 			for (FancyMessage fm:list) MessageApi.send(p, fm, true);
 			//尾
-			msg = get(p.getName(), 1120);
+			msg = get(p.getName(), 40);
 			if (msg != null) MessageApi.send(p, msg, true);
 		}
 	}
