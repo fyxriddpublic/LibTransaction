@@ -55,7 +55,7 @@ public abstract class Transaction {
 	public abstract void onTimeOut();
 
 	/**
-	 * 事务(非过期原因)取消时调用
+	 * 事务取消时调用(包括过期)
 	 */
 	public abstract void onCancel();
 	

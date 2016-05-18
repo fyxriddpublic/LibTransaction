@@ -96,6 +96,7 @@ public class TransactionUser {
 				it.remove();
 				//事务过期操作
 				trans.onTimeOut();
+				trans.onCancel();
 			}else if (trans.isTipTime()) {//提示检测
 				trans.onTip();
 			}
