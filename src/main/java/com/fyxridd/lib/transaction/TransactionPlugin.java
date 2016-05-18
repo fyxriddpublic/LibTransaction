@@ -1,6 +1,6 @@
 package com.fyxridd.lib.transaction;
 
-import com.fyxridd.lib.config.api.ConfigApi;
+import com.fyxridd.lib.core.api.config.ConfigApi;
 import com.fyxridd.lib.core.api.plugin.SimplePlugin;
 import com.fyxridd.lib.transaction.config.TransactionConfig;
 import com.fyxridd.lib.transaction.manager.TransactionManager;

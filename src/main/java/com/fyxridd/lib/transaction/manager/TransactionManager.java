@@ -1,13 +1,13 @@
 package com.fyxridd.lib.transaction.manager;
 
-import com.fyxridd.lib.config.api.ConfigApi;
-import com.fyxridd.lib.config.manager.ConfigManager;
 import com.fyxridd.lib.core.api.MessageApi;
 import com.fyxridd.lib.core.api.PlayerApi;
+import com.fyxridd.lib.core.api.config.ConfigApi;
 import com.fyxridd.lib.core.api.event.TimeEvent;
 import com.fyxridd.lib.core.api.fancymessage.FancyMessage;
 import com.fyxridd.lib.core.api.inter.FunctionInterface;
-import com.fyxridd.lib.core.manager.realname.NotReadyException;
+import com.fyxridd.lib.core.config.ConfigManager;
+import com.fyxridd.lib.core.realname.NotReadyException;
 import com.fyxridd.lib.transaction.TransactionPlugin;
 import com.fyxridd.lib.transaction.api.Transaction;
 import com.fyxridd.lib.transaction.api.TransactionUser;
