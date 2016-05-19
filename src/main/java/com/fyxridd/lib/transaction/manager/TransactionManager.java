@@ -5,13 +5,15 @@ import com.fyxridd.lib.core.api.PlayerApi;
 import com.fyxridd.lib.core.api.config.ConfigApi;
 import com.fyxridd.lib.core.api.event.TimeEvent;
 import com.fyxridd.lib.core.api.fancymessage.FancyMessage;
-import com.fyxridd.lib.core.api.inter.FunctionInterface;
 import com.fyxridd.lib.core.config.ConfigManager;
 import com.fyxridd.lib.core.realname.NotReadyException;
+import com.fyxridd.lib.func.api.FuncApi;
 import com.fyxridd.lib.transaction.TransactionPlugin;
 import com.fyxridd.lib.transaction.api.Transaction;
 import com.fyxridd.lib.transaction.api.TransactionUser;
+import com.fyxridd.lib.transaction.cmd.TransactionCmd;
 import com.fyxridd.lib.transaction.config.TransactionConfig;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
@@ -21,9 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class TransactionManager implements FunctionInterface {
-    private static final String FUNC_NAME = "TransactionManager";
-
+public class TransactionManager {
     private TransactionConfig config;
 
 	//玩家名 玩家事务信息
@@ -37,6 +37,8 @@ public class TransactionManager implements FunctionInterface {
                 config = value;
             }
         });
+        //注册功能
+        FuncApi.register(TransactionPlugin.instance.pn, new TransactionCmd());
         //注册事件
         {
             //时间事件
@@ -54,21 +56,6 @@ public class TransactionManager implements FunctionInterface {
                 }
             }, TransactionPlugin.instance);
         }
-    }
-
-    @Override
-    public String getName() {
-        return FUNC_NAME;
-    }
-
-    @Override
-    public boolean isOn(String name, String data) {
-        return true;
-    }
-
-    @Override
-    public void onOperate(Player p, String... args) {
-        operate(p, args);
     }
 
     /**
@@ -114,7 +101,7 @@ public class TransactionManager implements FunctionInterface {
      * @param args 操作内容
      * @return 操作结果
      */
-    private boolean operate(Player p, String... args) {
+    public boolean operate(Player p, String... args) {
         TransactionUser user = trans.get(p.getName());
         if (user == null) {//当前没有事务
             MessageApi.send(p, get(p.getName(), 20), true);

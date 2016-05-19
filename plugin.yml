@@ -1,4 +1,4 @@
 ﻿name: LibTransaction
 main: com.fyxridd.lib.transaction.TransactionPlugin
 version: 0.1.0
-depend: [LibCore]
+depend: [LibCorem,LibFunc]
