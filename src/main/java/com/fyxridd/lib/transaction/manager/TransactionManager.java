@@ -11,8 +11,8 @@ import com.fyxridd.lib.func.api.FuncApi;
 import com.fyxridd.lib.transaction.TransactionPlugin;
 import com.fyxridd.lib.transaction.api.Transaction;
 import com.fyxridd.lib.transaction.api.TransactionUser;
-import com.fyxridd.lib.transaction.cmd.TransactionCmd;
 import com.fyxridd.lib.transaction.config.TransactionConfig;
+import com.fyxridd.lib.transaction.func.TransactionCmd;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

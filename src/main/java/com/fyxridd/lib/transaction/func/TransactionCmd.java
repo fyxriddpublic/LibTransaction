@@ -1,4 +1,4 @@
-package com.fyxridd.lib.transaction.cmd;
+package com.fyxridd.lib.transaction.func;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
