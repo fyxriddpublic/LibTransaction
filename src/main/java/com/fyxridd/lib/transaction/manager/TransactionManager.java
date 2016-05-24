@@ -3,9 +3,9 @@ package com.fyxridd.lib.transaction.manager;
 import com.fyxridd.lib.core.api.MessageApi;
 import com.fyxridd.lib.core.api.PlayerApi;
 import com.fyxridd.lib.core.api.config.ConfigApi;
+import com.fyxridd.lib.core.api.config.Setter;
 import com.fyxridd.lib.core.api.event.TimeEvent;
 import com.fyxridd.lib.core.api.fancymessage.FancyMessage;
-import com.fyxridd.lib.core.config.ConfigManager;
 import com.fyxridd.lib.core.realname.NotReadyException;
 import com.fyxridd.lib.func.api.FuncApi;
 import com.fyxridd.lib.transaction.TransactionPlugin;
@@ -31,7 +31,7 @@ public class TransactionManager {
 	
 	public TransactionManager() {
         //添加配置监听
-        ConfigApi.addListener(TransactionPlugin.instance.pn, TransactionConfig.class, new ConfigManager.Setter<TransactionConfig>() {
+        ConfigApi.addListener(TransactionPlugin.instance.pn, TransactionConfig.class, new Setter<TransactionConfig>() {
             @Override
             public void set(TransactionConfig value) {
                 config = value;
