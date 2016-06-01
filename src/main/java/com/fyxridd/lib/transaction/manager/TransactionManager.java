@@ -6,7 +6,6 @@ import com.fyxridd.lib.core.api.config.ConfigApi;
 import com.fyxridd.lib.core.api.config.Setter;
 import com.fyxridd.lib.core.api.event.TimeEvent;
 import com.fyxridd.lib.core.api.fancymessage.FancyMessage;
-import com.fyxridd.lib.core.api.exception.NotReadyException;
 import com.fyxridd.lib.func.api.FuncApi;
 import com.fyxridd.lib.transaction.TransactionPlugin;
 import com.fyxridd.lib.transaction.api.Transaction;
@@ -45,13 +44,15 @@ public class TransactionManager {
             Bukkit.getPluginManager().registerEvent(TimeEvent.class, TransactionPlugin.instance, EventPriority.NORMAL, new EventExecutor() {
                 @Override
                 public void execute(Listener listener, Event e) throws EventException {
-                    Iterator<Map.Entry<String, TransactionUser>> it = trans.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry<String, TransactionUser> entry = it.next();
-                        //过期与提示
-                        entry.getValue().onTime();
-                        //检测事务为空
-                        if (entry.getValue().isEmpty()) it.remove();//玩家事务为空,删除事务
+                    if (e instanceof TimeEvent) {
+                        Iterator<Map.Entry<String, TransactionUser>> it = trans.entrySet().iterator();
+                        while (it.hasNext()) {
+                            Map.Entry<String, TransactionUser> entry = it.next();
+                            //过期与提示
+                            entry.getValue().onTime();
+                            //检测事务为空
+                            if (entry.getValue().isEmpty()) it.remove();//玩家事务为空,删除事务
+                        }
                     }
                 }
             }, TransactionPlugin.instance);
@@ -63,12 +64,8 @@ public class TransactionManager {
      */
     public TransactionUser getTransactionUser(String name) {
         //玩家存在性检测
-        try {
-            name = PlayerApi.getRealName(null, name);
-            if (name == null) return null;
-        } catch (NotReadyException e) {
-            return null;
-        }
+        name = PlayerApi.getRealName(null, name);
+        if (name == null) return null;
         //
         if (!trans.containsKey(name)) trans.put(name, new TransactionUser(name));
         return trans.get(name);
@@ -80,12 +77,8 @@ public class TransactionManager {
     public void delTransaction(String name) {
         if (name == null) return;
         //玩家存在性检测
-        try {
-            name = PlayerApi.getRealName(null, name);
-            if (name == null) return;
-        } catch (NotReadyException e) {
-            return;
-        }
+        name = PlayerApi.getRealName(null, name);
+        if (name == null) return;
         //
         TransactionUser tu = trans.remove(name);
         if (tu != null) tu.delAllTransaction();
